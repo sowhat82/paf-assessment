@@ -71,7 +71,6 @@ startApp(app, pool)
 
 app.post('/login', async (req, resp) => {
 
-	console.info('here')
     const username = req.body.username;
     const password = req.body.password;
 
@@ -106,15 +105,12 @@ app.post('/login', async (req, resp) => {
 	}
 });
 
-app.post('/uploadImage', multipart.single('image-file'),
-    (req, resp) => {
+app.post('/share', multipart.single('image-file'),
+    async (req, resp) => {
 
         try{
-            fs.readFile(req.file.path, async (err, imgFile) => {
-            
-                // put object configurations
-    
                 // post to digital ocean        
+            fs.readFile(req.file.path, async (err, imgFile) => {
                 const params = {
                     Bucket: 'tfipbucket',
                     Key: req.file.filename,
@@ -124,23 +120,38 @@ app.post('/uploadImage', multipart.single('image-file'),
                     ContentLength: req.file.size,
                     Metadata: {
                         originalName: req.file.originalname,
-                        author: 'alvin',
+                        author: 'author',
                         update: 'new image',
                     }
                 }
                 // post to digital ocean continued
                 s3.putObject(params, (error, result) => {    
                 })
+            })    
 
-                // delete temp file that multer stores
-                resp.on('finish', () => {
-                    fs.unlink(req.file.path, () =>{})
-                })
+            // post to mongo
+            const title = req.query['title'];
+            const comments	 = req.query['comments'];
+            const digitalOceanKey = req.file.filename
+        
+            const result = await client.db(DATABASE)
+            .collection(COLLECTION)
+            .insertOne({
+                title: title,
+                comments: comments,
+                digitalOceanKey: digitalOceanKey,
+                timeStamp: new Date(),
+            })
+    
+            // delete temp file that multer stores
+            resp.on('finish', () => {
+                fs.unlink(req.file.path, () =>{})
+            })
 
-                return resp.status(200)
-                .type('application/json')
-                .json({ 'key': req.file.filename });
-        })    
+            resp.status(200)
+            resp.type('application/json')
+            resp.json(result)
+
 
         }
         catch(e){
@@ -148,37 +159,7 @@ app.post('/uploadImage', multipart.single('image-file'),
             console.info(e)
             resp.json({e})
         }
-
     }    
 );
-
-app.post('/share', async (req, resp) => {
-
-    const title = req.body.title;
-    const comments	 = req.body.comments;
-    const digitalOceanKey = req.body.digitalOceanKey
-
-    try{
-        const result = await client.db(DATABASE)
-        .collection(COLLECTION)
-        .insertOne({
-            title: title,
-            comments: comments,
-            digitalOceanKey: digitalOceanKey,
-            timeStamp: new Date(),
-        })
-
-        resp.status(200)
-        resp.type('application/json')
-        resp.json(result)
-
-    }
-    catch(e){
-        resp.status(500)
-        console.info(e)
-        resp.json({e})
-    }
-
-});
 
 app.use(express.static ( __dirname + '/frontend'))
