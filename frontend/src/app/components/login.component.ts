@@ -24,9 +24,12 @@ export class LoginComponent implements OnInit {
   }
 
   async login(){
+
+    var success = true;
+
     const loginData = new HttpParams()
-    .set('name', this.loginForm.get('name').value)
-    .set('email', this.loginForm.get('password').value)
+    .set('username', this.loginForm.get('username').value)
+    .set('password', this.loginForm.get('password').value)
 
     const httpHeaders = new HttpHeaders()
     .set('Content-Type', 'application/x-www-form-urlencoded')
@@ -35,15 +38,20 @@ export class LoginComponent implements OnInit {
       function() {
         // success callback
 //          window.alert('Order Added!')
-        this.router.navigate(['/capture'])
+        success = true
       },
       function(response) {
         // failure callback,handle error here
         // response.data.message will be "This is an error!"
 
         console.log(response)
-        window.alert(response.error.message)
+        window.alert("Invalid user")
+        success = false
       }
     )
+    if (success){
+      this.router.navigate(['/capture'])
+
+    }
   }
 }
