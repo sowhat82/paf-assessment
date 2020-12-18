@@ -13,15 +13,18 @@ export class MainComponent implements OnInit {
 
 	mainForm : FormGroup
 	imagePath = '/assets/cactus.png'
-	file: any
+	img: any
+	
 
 	constructor(private cameraSvc: CameraService, private fb: FormBuilder, private auth: Auth, private http: HttpClient) { }
 
 	ngOnInit(): void {
 	  if (this.cameraSvc.hasImage()) {
 		  const img = this.cameraSvc.getImage()
-			this.imagePath = img.imageAsDataUrl
+		  this.img = img
+		  this.imagePath = img.imageAsDataUrl
 		}
+		// console.info(this.img.imageData)	
 
 	  this.mainForm = this.fb.group({
 		// image: this.fb.control('', [Validators.required]),

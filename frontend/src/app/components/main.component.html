@@ -21,7 +21,7 @@
 		<textarea formControlName = "comments" id="comments"rows="5" class="form-control" placeholder="Your thoughts"></textarea>
 	</div>
 	<div class="d-flex justify-content-between mt-4">
-		<button [disabled] = "mainForm.invalid" class="btn btn-lg btn-primary" (click) = "share()">
+		<button [disabled] = "mainForm.invalid || !img" class="btn btn-lg btn-primary" (click) = "share()">
 			<span style="margin-right: 5px !important;">Share</span>
 			<i class="fas fa-share-alt"></i>
 		</button>
