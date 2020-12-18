@@ -79,12 +79,12 @@ export class MainComponent implements OnInit {
 					},
 					function(response) {
 					  // failure callback,handle error here
-					  // response.data.message will be "This is an error!"
 						window.alert(response.error.message)
 					}
 				  )	
+				this.clear()
 			}
-		this.clear()
+
 		}
 		else {
 			window.alert('Credentials are not correct')
