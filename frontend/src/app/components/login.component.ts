@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Auth } from '../auth.service';
 
 
 @Component({
@@ -14,7 +15,7 @@ export class LoginComponent implements OnInit {
   loginForm : FormGroup
 	errorMessage = ''
 
-	constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) { }
+	constructor(private fb: FormBuilder, private router: Router, private http: HttpClient, private auth: Auth) { }
 
 	ngOnInit(): void { 
     this.loginForm = this.fb.group({
@@ -27,31 +28,19 @@ export class LoginComponent implements OnInit {
 
     var success = true;
 
-    const loginData = new HttpParams()
-    .set('username', this.loginForm.get('username').value)
-    .set('password', this.loginForm.get('password').value)
+    const username = this.loginForm.get('username').value
+    const password = this.loginForm.get('password').value
 
-    const httpHeaders = new HttpHeaders()
-    .set('Content-Type', 'application/x-www-form-urlencoded')
-
-    await this.http.post('/login', loginData, {headers: httpHeaders}).toPromise().then(
-      function() {
-        // success callback
-//          window.alert('Order Added!')
-        success = true
-      },
-      function(response) {
-        // failure callback,handle error here
-        // response.data.message will be "This is an error!"
-
-        console.log(response)
-        window.alert("Invalid user")
-        success = false
-      }
-    )
-    if (success){
+    if (await this.auth.verifyLogin(username, password) == true){
+      console.info('yes')
+      this.auth.username = this.loginForm.get('username').value
+      this. auth.password = this.loginForm.get('password').value
       this.router.navigate(['/capture'])
-
     }
+    else{
+      console.info('no')
+      this.errorMessage = "Invalid user"
+    }
+
   }
 }
