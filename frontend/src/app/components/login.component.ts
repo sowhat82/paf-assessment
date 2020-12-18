@@ -38,8 +38,8 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/capture'])
     }
     else{
-      console.info('no')
       this.errorMessage = "Invalid user"
+      console.info(this.errorMessage)
     }
 
   }
