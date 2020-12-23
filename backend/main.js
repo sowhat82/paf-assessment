@@ -64,7 +64,7 @@ const pool = mysql.createPool({
 	connectionLimit: 4
 })
 
-const SQL_SELECT_COUNT_WHERE_USERNAME_PASSWORD = 'select count(*) from user where user_id = ? and password = ?;'
+const SQL_SELECT_COUNT_WHERE_USERNAME_PASSWORD = 'select count(*) from user where user_id = ? and password = sha1(?);'
 
 // start the app
 startApp(app, pool)

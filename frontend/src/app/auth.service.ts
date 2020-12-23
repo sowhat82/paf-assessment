@@ -10,7 +10,8 @@ export class Auth {
     constructor(private http: HttpClient){}
     
     async verifyLogin(username: string, password:string){
-        var success = false; 
+        var success = false;
+        var status = 0
         const loginData = new HttpParams()
         .set('username', username)
         .set('password', password)
@@ -18,23 +19,25 @@ export class Auth {
         const httpHeaders = new HttpHeaders()
         .set('Content-Type', 'application/x-www-form-urlencoded')
 
-        await this.http.post('/login', loginData, {headers: httpHeaders}).toPromise().then(
-            function() {
+        // "observe response" to obtain the status code in the result object
+        await this.http.post('/login', loginData, {headers: httpHeaders, observe: 'response'}).toPromise().then(
+            function(result) {
               // success callback
-      //        window.alert("Success")
               success = true
+              status = result.status
+              // this.username = username
+              // this.password = password
             },
-            function(response) {
+            function(result) {
               // failure callback,handle error here
               // response.data.message will be "This is an error!"
-      
-              console.log(response)
-              window.alert("Invalid user")
+              status = result.status
+              window.alert("Invalid user " + status.toString())
               success = false
             }
         )
 
-        return (success)
+        return (status)
     }
             
 }

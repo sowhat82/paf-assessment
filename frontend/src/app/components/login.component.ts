@@ -27,18 +27,20 @@ export class LoginComponent implements OnInit {
   async login(){
 
     var success = true;
+    var status = 0
 
     const username = this.loginForm.get('username').value
     const password = this.loginForm.get('password').value
 
-    if (await this.auth.verifyLogin(username, password) == true){
-      console.info('yes')
+    status = await this.auth.verifyLogin(username, password)
+
+    if (status == 200){
       this.auth.username = this.loginForm.get('username').value
       this. auth.password = this.loginForm.get('password').value
       this.router.navigate(['/capture'])
     }
     else{
-      this.errorMessage = "Invalid user"
+      this.errorMessage = "Invalid user " + status.toString()
       console.info(this.errorMessage)
     }
 
